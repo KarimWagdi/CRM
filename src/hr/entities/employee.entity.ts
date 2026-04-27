@@ -4,6 +4,8 @@ import { Position } from './position.entity';
 import { LeaveRequest } from './leave-request.entity';
 import { Attendance } from './attendance.entity';
 import { User } from '../../users/entities/user.entity';
+import { Task } from '../../tasks/entities/task.entity';
+import { Expense } from '../../accounting/entities/expense.entity';
 
 @Entity()
 export class Employee {
@@ -40,6 +42,12 @@ export class Employee {
 
   @OneToMany(() => Attendance, (attendance) => attendance.employee)
   attendances: Attendance[];
+
+  @OneToMany(() => Task, (task) => task.assignee)
+  tasks: Task[];
+
+  @OneToMany(() => Expense, (expense) => expense.employee)
+  expenses: Expense[];
 
   @CreateDateColumn()
   createdAt: Date;

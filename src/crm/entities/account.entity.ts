@@ -1,6 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Contact } from './contact.entity';
 import { Opportunity } from './opportunity.entity';
+import { Project } from '../../tasks/entities/project.entity';
+import { Invoice } from '../../accounting/entities/invoice.entity';
 
 @Entity()
 export class Account {
@@ -27,6 +29,12 @@ export class Account {
 
   @OneToMany(() => Opportunity, (opportunity) => opportunity.account)
   opportunities: Opportunity[];
+
+  @OneToMany(() => Project, (project) => project.account)
+  projects: Project[];
+
+  @OneToMany(() => Invoice, (invoice) => invoice.account)
+  invoices: Invoice[];
 
   @CreateDateColumn()
   createdAt: Date;
