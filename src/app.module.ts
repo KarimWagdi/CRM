@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { CrmModule } from './crm/crm.module';
 import { HrModule } from './hr/hr.module';
 import { UsersModule } from './users/users.module';
+import { TasksModule } from './tasks/tasks.module';
+import { AccountingModule } from './accounting/accounting.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { UsersModule } from './users/users.module';
     CrmModule,
     HrModule,
     UsersModule,
+    TasksModule,
+    AccountingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
