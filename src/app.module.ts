@@ -5,11 +5,12 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CrmModule } from './crm/crm.module';
-import { HrModule } from './hr/hr.module';
-import { UsersModule } from './users/users.module';
-import { TasksModule } from './tasks/tasks.module';
-import { AccountingModule } from './accounting/accounting.module';
+import { CrmModule } from './modules/crm/crm.module';
+import { HrModule } from './modules/hr/hr.module';
+import { UsersModule } from './modules/users/users.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { AccountingModule } from './modules/accounting/accounting.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { AccountingModule } from './accounting/accounting.module';
     UsersModule,
     TasksModule,
     AccountingModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
