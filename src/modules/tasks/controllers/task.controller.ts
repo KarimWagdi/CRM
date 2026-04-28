@@ -9,6 +9,12 @@ import { Task } from '../entities/task.entity';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get task statistics' })
+  getStats() {
+    return this.taskService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new task' })
   @ApiResponse({ status: 201, description: 'The task has been successfully created.', type: Task })

@@ -11,13 +11,18 @@ import HRDashboard from './pages/HRDashboard';
 import ProjectDashboard from './pages/ProjectDashboard';
 import FinanceDashboard from './pages/FinanceDashboard';
 
-// Placeholder Pages
-const Placeholder: React.FC<{ title: string }> = ({ title }) => (
-  <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm">
-    <h2 className="text-2xl font-bold text-slate-800">{title} Page</h2>
-    <p className="text-slate-500 mt-2">This is a placeholder for the {title.toLowerCase()} management view.</p>
-  </div>
-);
+import LeadsPage from './pages/LeadsPage';
+import AccountsPage from './pages/AccountsPage';
+import OpportunitiesPage from './pages/OpportunitiesPage';
+import EmployeesPage from './pages/EmployeesPage';
+import LeaveRequestsPage from './pages/LeaveRequestsPage';
+import AttendancePage from './pages/AttendancePage';
+import ProjectsPage from './pages/ProjectsPage';
+import TasksPage from './pages/TasksPage';
+import InvoicesPage from './pages/InvoicesPage';
+import PaymentsPage from './pages/PaymentsPage';
+import ExpensesPage from './pages/ExpensesPage';
+import UsersPage from './pages/UsersPage';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { role, setRole } = useAuth();
@@ -54,26 +59,26 @@ const App: React.FC = () => {
           <Route path="/" element={getDashboard()} />
 
           {/* CRM Routes */}
-          <Route path="/leads" element={<Placeholder title="Leads" />} />
-          <Route path="/accounts" element={<Placeholder title="Accounts" />} />
-          <Route path="/opportunities" element={<Placeholder title="Opportunities" />} />
+          <Route path="/leads" element={<LeadsPage />} />
+          <Route path="/accounts" element={<AccountsPage />} />
+          <Route path="/opportunities" element={<OpportunitiesPage />} />
 
           {/* HR Routes */}
-          <Route path="/employees" element={<Placeholder title="Employees" />} />
-          <Route path="/leave-requests" element={<Placeholder title="Leave Requests" />} />
-          <Route path="/attendance" element={<Placeholder title="Attendance" />} />
+          <Route path="/employees" element={<EmployeesPage />} />
+          <Route path="/leave-requests" element={<LeaveRequestsPage />} />
+          <Route path="/attendance" element={<AttendancePage />} />
 
           {/* Project Routes */}
-          <Route path="/projects" element={<Placeholder title="Projects" />} />
-          <Route path="/tasks" element={<Placeholder title="Tasks" />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/tasks" element={<TasksPage />} />
 
           {/* Finance Routes */}
-          <Route path="/invoices" element={<Placeholder title="Invoices" />} />
-          <Route path="/payments" element={<Placeholder title="Payments" />} />
-          <Route path="/expenses" element={<Placeholder title="Expenses" />} />
+          <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/expenses" element={<ExpensesPage />} />
 
           {/* System Routes */}
-          <Route path="/users" element={<Placeholder title="Users" />} />
+          <Route path="/users" element={<UsersPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

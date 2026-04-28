@@ -9,6 +9,12 @@ import { Invoice } from '../entities/invoice.entity';
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get invoice statistics' })
+  getStats() {
+    return this.invoiceService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new invoice' })
   @ApiResponse({ status: 201, description: 'The invoice has been successfully created.', type: Invoice })

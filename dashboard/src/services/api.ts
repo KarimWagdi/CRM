@@ -13,6 +13,16 @@ export const leadService = {
   create: (data: any) => api.post('/leads', data),
   update: (id: number, data: any) => api.patch(`/leads/${id}`, data),
   remove: (id: number) => api.delete(`/leads/${id}`),
+  getStats: () => api.get('/leads/stats'),
+};
+
+export const opportunityService = {
+  findAll: () => api.get('/opportunities'),
+  findOne: (id: number) => api.get(`/opportunities/${id}`),
+  create: (data: any) => api.post('/opportunities', data),
+  update: (id: number, data: any) => api.patch(`/opportunities/${id}`, data),
+  remove: (id: number) => api.delete(`/opportunities/${id}`),
+  getStats: () => api.get('/opportunities/stats'),
 };
 
 export const accountService = {
@@ -29,6 +39,12 @@ export const employeeService = {
   create: (data: any) => api.post('/employees', data),
   update: (id: number, data: any) => api.patch(`/employees/${id}`, data),
   remove: (id: number) => api.delete(`/employees/${id}`),
+  getStats: () => api.get('/employees/stats'),
+};
+
+export const attendanceService = {
+  findAll: () => api.get('/attendance'),
+  getStats: () => api.get('/attendance/stats'),
 };
 
 export const projectService = {
@@ -37,6 +53,16 @@ export const projectService = {
   create: (data: any) => api.post('/projects', data),
   update: (id: number, data: any) => api.patch(`/projects/${id}`, data),
   remove: (id: number) => api.delete(`/projects/${id}`),
+  getStats: () => api.get('/projects/stats'),
+};
+
+export const taskService = {
+  findAll: () => api.get('/tasks'),
+  findOne: (id: number) => api.get(`/tasks/${id}`),
+  create: (data: any) => api.post('/tasks', data),
+  update: (id: number, data: any) => api.patch(`/tasks/${id}`, data),
+  remove: (id: number) => api.delete(`/tasks/${id}`),
+  getStats: () => api.get('/tasks/stats'),
 };
 
 export const invoiceService = {
@@ -45,6 +71,20 @@ export const invoiceService = {
   create: (data: any) => api.post('/invoices', data),
   update: (id: number, data: any) => api.patch(`/invoices/${id}`, data),
   remove: (id: number) => api.delete(`/invoices/${id}`),
+  getStats: () => api.get('/invoices/stats'),
+};
+
+export const expenseService = {
+  findAll: () => api.get('/expenses'),
+  getStats: () => api.get('/expenses/stats'),
+};
+
+export const paymentService = {
+  findAll: () => api.get('/payments'),
+};
+
+export const leaveRequestService = {
+  findAll: () => api.get('/leave-requests'),
 };
 
 export const userService = {

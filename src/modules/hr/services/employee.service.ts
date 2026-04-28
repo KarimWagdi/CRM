@@ -95,4 +95,18 @@ export class EmployeeService {
       throw new NotFoundException(`Employee with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const totalCount = await this.employeeRepository.count();
+    const recentHires = await this.employeeRepository.find({
+      relations: ['department', 'position'],
+      order: { hireDate: 'DESC' },
+      take: 5,
+    });
+
+    return {
+      totalCount,
+      recentHires,
+    };
+  }
 }

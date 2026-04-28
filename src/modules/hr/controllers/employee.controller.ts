@@ -9,6 +9,12 @@ import { Employee } from '../entities/employee.entity';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get employee statistics' })
+  getStats() {
+    return this.employeeService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new employee' })
   @ApiResponse({ status: 201, description: 'The employee has been successfully created.', type: Employee })

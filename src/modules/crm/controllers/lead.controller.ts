@@ -9,6 +9,12 @@ import { Lead } from '../entities/lead.entity';
 export class LeadController {
   constructor(private readonly leadService: LeadService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get lead statistics' })
+  getStats() {
+    return this.leadService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new lead' })
   @ApiResponse({ status: 201, description: 'The lead has been successfully created.', type: Lead })

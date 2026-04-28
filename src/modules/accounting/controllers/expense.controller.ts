@@ -9,6 +9,12 @@ import { Expense } from '../entities/expense.entity';
 export class ExpenseController {
   constructor(private readonly expenseService: ExpenseService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get expense statistics' })
+  getStats() {
+    return this.expenseService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new expense' })
   @ApiResponse({ status: 201, description: 'The expense has been successfully created.', type: Expense })

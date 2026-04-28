@@ -82,4 +82,26 @@ export class TaskService {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const totalCount = await this.taskRepository.count();
+    const completedCount = await this.taskRepository
+      .createQueryBuilder('task')
+      .innerJoin('task.list', 'list')
+      .where('LOWER(list.name) LIKE :name', { name: '%done%' })
+      .orWhere('LOWER(list.name) LIKE :name2', { name2: '%completed%' })
+      .getCount();
+
+    const recentTasks = await this.taskRepository.find({
+      relations: ['list', 'assignee'],
+      order: { createdAt: 'DESC' },
+      take: 5,
+    });
+
+    return {
+      totalCount,
+      completedCount,
+      recentTasks,
+    };
+  }
 }

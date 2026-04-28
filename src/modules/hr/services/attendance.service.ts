@@ -61,4 +61,26 @@ export class AttendanceService {
       throw new NotFoundException(`Attendance record with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayCount = await this.attendanceRepository
+      .createQueryBuilder('attendance')
+      .where('attendance.date = :today', { today: today.toISOString().split('T')[0] })
+      .getCount();
+
+    const statusCounts = await this.attendanceRepository
+      .createQueryBuilder('attendance')
+      .select('attendance.status', 'status')
+      .addSelect('COUNT(attendance.id)', 'count')
+      .groupBy('attendance.status')
+      .getRawMany();
+
+    return {
+      todayCount,
+      statusCounts,
+    };
+  }
 }

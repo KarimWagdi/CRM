@@ -61,4 +61,32 @@ export class InvoiceService {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const totalCount = await this.invoiceRepository.count();
+    const totalAmount = await this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .select('SUM(invoice.totalAmount)', 'total')
+      .getRawOne();
+
+    const statusCounts = await this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .select('invoice.status', 'status')
+      .addSelect('COUNT(invoice.id)', 'count')
+      .groupBy('invoice.status')
+      .getRawMany();
+
+    const recentInvoices = await this.invoiceRepository.find({
+      relations: ['account'],
+      order: { createdAt: 'DESC' },
+      take: 5,
+    });
+
+    return {
+      totalCount,
+      totalAmount: parseFloat(totalAmount.total || 0),
+      statusCounts,
+      recentInvoices,
+    };
+  }
 }

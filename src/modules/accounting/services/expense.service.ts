@@ -61,4 +61,23 @@ export class ExpenseService {
       throw new NotFoundException(`Expense record with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const totalAmount = await this.expenseRepository
+      .createQueryBuilder('expense')
+      .select('SUM(expense.amount)', 'total')
+      .getRawOne();
+
+    const categoryCounts = await this.expenseRepository
+      .createQueryBuilder('expense')
+      .select('expense.category', 'category')
+      .addSelect('SUM(expense.amount)', 'total')
+      .groupBy('expense.category')
+      .getRawMany();
+
+    return {
+      totalAmount: parseFloat(totalAmount.total || 0),
+      categoryCounts,
+    };
+  }
 }

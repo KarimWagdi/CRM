@@ -1,21 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import StatsCard from '../components/StatsCard';
 import { Users, Briefcase, FileText, TrendingUp } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area
 } from 'recharts';
-
-const data = [
-  { name: 'Jan', revenue: 4000, expenses: 2400, tasks: 24 },
-  { name: 'Feb', revenue: 3000, expenses: 1398, tasks: 13 },
-  { name: 'Mar', revenue: 2000, expenses: 9800, tasks: 98 },
-  { name: 'Apr', revenue: 2780, expenses: 3908, tasks: 39 },
-  { name: 'May', revenue: 1890, expenses: 4800, tasks: 48 },
-  { name: 'Jun', revenue: 2390, expenses: 3800, tasks: 38 },
-];
+import { userService, projectService, invoiceService, taskService } from '../services/api';
 
 const AdminDashboard: React.FC = () => {
+  const [stats, setStats] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAllStats = async () => {
+      try {
+        const [userRes, projRes, invRes, taskRes] = await Promise.all([
+          userService.findAll(),
+          projectService.getStats(),
+          invoiceService.getStats(),
+          taskService.getStats()
+        ]);
+        setStats({
+          users: userRes.data.length,
+          projects: projRes.data.totalCount,
+          revenue: invRes.data.totalAmount,
+          invoices: invRes.data.statusCounts.find((s:any) => s.status === 'Sent')?.count || 0,
+          tasks: taskRes.data.totalCount
+        });
+      } catch (error) {
+        console.error('Failed to fetch admin stats', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllStats();
+  }, []);
+
+  if (loading) return <div className="p-8 text-center text-slate-500">Loading Admin Dashboard...</div>;
+
+  const data = [
+    { name: 'Total', revenue: stats.revenue, tasks: stats.tasks },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -26,15 +52,15 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard title="Total Users" value="156" icon={Users} trend="+12% from last month" color="bg-blue-500" />
-        <StatsCard title="Total Revenue" value="$45,231" icon={TrendingUp} trend="+8% from last month" color="bg-emerald-500" />
-        <StatsCard title="Active Projects" value="12" icon={Briefcase} trend="2 ending this week" color="bg-amber-500" />
-        <StatsCard title="Pending Invoices" value="8" icon={FileText} trend="$2,400 overdue" color="bg-rose-500" />
+        <StatsCard title="Total Users" value={stats.users} icon={Users} trend="Live from system" color="bg-blue-500" />
+        <StatsCard title="Total Revenue" value={`$${stats.revenue?.toLocaleString() || 0}`} icon={TrendingUp} trend="Gross invoiced" color="bg-emerald-500" />
+        <StatsCard title="Active Projects" value={stats.projects} icon={Briefcase} trend="Current tracked" color="bg-amber-500" />
+        <StatsCard title="Pending Invoices" value={stats.invoices} icon={FileText} trend="Awaiting payment" color="bg-rose-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Revenue vs Expenses</h3>
+          <h3 className="text-lg font-semibold mb-4">System Activity</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data}>
@@ -43,14 +69,13 @@ const AdminDashboard: React.FC = () => {
                 <YAxis />
                 <Tooltip />
                 <Area type="monotone" dataKey="revenue" stroke="#3b82f6" fill="#93c5fd" />
-                <Area type="monotone" dataKey="expenses" stroke="#ef4444" fill="#fca5a5" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4">Module Activity</h3>
+          <h3 className="text-lg font-semibold mb-4">Task Volume</h3>
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data}>

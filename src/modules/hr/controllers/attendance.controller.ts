@@ -9,6 +9,12 @@ import { Attendance } from '../entities/attendance.entity';
 export class AttendanceController {
   constructor(private readonly attendanceService: AttendanceService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get attendance statistics' })
+  getStats() {
+    return this.attendanceService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new attendance record' })
   @ApiResponse({ status: 201, description: 'The attendance record has been successfully created.', type: Attendance })
