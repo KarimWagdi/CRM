@@ -55,4 +55,18 @@ export const userService = {
   remove: (id: number) => api.delete(`/users/${id}`),
 };
 
+export const salaryService = {
+  findAll: () => api.get('/salaries'),
+  findByEmployee: (employeeId: number) => api.get(`/salaries/employee/${employeeId}`),
+  triggerMonthly: () => api.post('/salaries/trigger-monthly'),
+};
+
+export const performanceService = {
+  findAll: () => api.get('/performance'),
+  findByEmployee: (employeeId: number) => api.get(`/performance/employee/${employeeId}`),
+  create: (data: any) => api.post('/performance', data),
+  calculateMetrics: (employeeId: number, startDate: string, endDate: string) =>
+    api.get(`/performance/calculate-metrics/${employeeId}`, { params: { startDate, endDate } }),
+};
+
 export default api;

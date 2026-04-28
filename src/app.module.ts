@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CrmModule } from './crm/crm.module';
@@ -13,6 +15,24 @@ import { AccountingModule } from './accounting/accounting.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ScheduleModule.forRoot(),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        transport: {
+          host: configService.get('MAIL_HOST'),
+          port: configService.get('MAIL_PORT'),
+          auth: {
+            user: configService.get('MAIL_USER'),
+            pass: configService.get('MAIL_PASS'),
+          },
+        },
+        defaults: {
+          from: configService.get('MAIL_FROM'),
+        },
+      }),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

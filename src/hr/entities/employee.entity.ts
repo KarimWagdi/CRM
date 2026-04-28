@@ -27,6 +27,9 @@ export class Employee {
   @Column({ type: 'date', nullable: true })
   hireDate: Date;
 
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  baseSalary: number;
+
   @ManyToOne(() => Department, (department) => department.employees)
   department: Department;
 
