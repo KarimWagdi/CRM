@@ -1,10 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { LeadService } from '../services/lead.service';
 import { CreateLeadDto, UpdateLeadDto } from '../dto/lead.dto';
 import { Lead } from '../entities/lead.entity';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../common/guards/roles.guard';
+import { Roles } from '../../../common/decorators/roles.decorator';
 
 @ApiTags('leads')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('leads')
 export class LeadController {
   constructor(private readonly leadService: LeadService) {}
@@ -16,6 +21,7 @@ export class LeadController {
   }
 
   @Post()
+  @Roles('Admin', 'Sales')
   @ApiOperation({ summary: 'Create a new lead' })
   @ApiResponse({ status: 201, description: 'The lead has been successfully created.', type: Lead })
   create(@Body() createLeadDto: CreateLeadDto) {
