@@ -43,8 +43,8 @@ const SalesDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard title="Total Leads" value={stats?.total || 0} icon={UserPlus} trend="Lifetime total" color="bg-blue-500" />
         <StatsCard title="Open Opps" value={oppStats?.total || 0} icon={Target} trend={`$${oppStats?.totalValue?.toLocaleString() || 0} value`} color="bg-indigo-500" />
-        <StatsCard title="Conversion Rate" value="TBD" icon={TrendingUp} trend="Active analysis" color="bg-emerald-500" />
-        <StatsCard title="Lead Growth" value={stats?.recentLeads.length || 0} icon={PhoneCall} trend="New this period" color="bg-amber-500" />
+        <StatsCard title="Conversion Rate" value={`${Math.round(((oppStats?.stageCounts?.find((s:any) => s.stage === 'Closed Won')?.count || 0) / (oppStats?.total || 1)) * 100)}%`} icon={TrendingUp} trend="Active analysis" color="bg-emerald-500" />
+        <StatsCard title="Lead Growth" value={stats?.recentLeads?.length || 0} icon={PhoneCall} trend="New this period" color="bg-amber-500" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InvoiceItemService } from '../services/invoice-item.service';
 import { CreateInvoiceItemDto, UpdateInvoiceItemDto } from '../dto/invoice-item.dto';
 import { InvoiceItem } from '../entities/invoice-item.entity';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../common/guards/roles.guard';
 
 @ApiTags('invoice-items')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('invoice-items')
 export class InvoiceItemController {
   constructor(private readonly invoiceItemService: InvoiceItemService) {}

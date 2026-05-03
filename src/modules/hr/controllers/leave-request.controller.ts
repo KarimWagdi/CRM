@@ -1,13 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { LeaveRequestService } from '../services/leave-request.service';
 import { CreateLeaveRequestDto, UpdateLeaveRequestDto } from '../dto/leave-request.dto';
 import { LeaveRequest } from '../entities/leave-request.entity';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../common/guards/roles.guard';
 
 @ApiTags('leave-requests')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('leave-requests')
 export class LeaveRequestController {
   constructor(private readonly leaveRequestService: LeaveRequestService) {}
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Get leave request statistics' })
+  getStats() {
+    return this.leaveRequestService.getStats();
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new leave request' })
