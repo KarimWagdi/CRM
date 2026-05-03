@@ -8,7 +8,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  @ApiOperation({ summary: 'Login user (Mock)' })
+  @ApiOperation({ summary: 'Login user' })
   async login(@Body() body: any) {
     const user = await this.authService.validateUser(body.username, body.password);
     if (!user) {
