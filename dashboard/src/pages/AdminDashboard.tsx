@@ -24,7 +24,7 @@ const AdminDashboard: React.FC = () => {
           users: userRes.data.length,
           projects: projRes.data.totalCount,
           revenue: invRes.data.totalAmount,
-          invoices: invRes.data.statusCounts.find((s:any) => s.status === 'Sent')?.count || 0,
+          invoices: invRes.data.statusCounts?.find((s:any) => s.status === 'Sent')?.count || 0,
           tasks: taskRes.data.totalCount
         });
       } catch (error) {

@@ -40,4 +40,19 @@ export class AccountService {
       throw new NotFoundException(`Account with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const totalCount = await this.accountRepository.count();
+    const industryCounts = await this.accountRepository
+      .createQueryBuilder('account')
+      .select('account.industry', 'industry')
+      .addSelect('COUNT(account.id)', 'count')
+      .groupBy('account.industry')
+      .getRawMany();
+
+    return {
+      totalCount,
+      industryCounts,
+    };
+  }
 }

@@ -1,13 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AccountService } from '../services/account.service';
 import { CreateAccountDto, UpdateAccountDto } from '../dto/account.dto';
 import { Account } from '../entities/account.entity';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../../common/guards/roles.guard';
+import { Roles } from '../../../common/decorators/roles.decorator';
 
 @ApiTags('accounts')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('accounts')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Get account statistics' })
+  getStats() {
+    return this.accountService.getStats();
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new account' })

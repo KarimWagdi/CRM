@@ -61,4 +61,20 @@ export class LeaveRequestService {
       throw new NotFoundException(`Leave request with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const totalCount = await this.leaveRequestRepository.count();
+    const pendingCount = await this.leaveRequestRepository.count({ where: { status: 'Pending' as any } });
+    const recentRequests = await this.leaveRequestRepository.find({
+      relations: ['employee'],
+      order: { createdAt: 'DESC' },
+      take: 5,
+    });
+
+    return {
+      totalCount,
+      pendingCount,
+      recentRequests,
+    };
+  }
 }

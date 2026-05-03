@@ -7,6 +7,18 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const authService = {
+  login: (credentials: any) => api.post('/auth/login', credentials),
+};
+
 export const leadService = {
   findAll: () => api.get('/leads'),
   findOne: (id: number) => api.get(`/leads/${id}`),
@@ -31,6 +43,7 @@ export const accountService = {
   create: (data: any) => api.post('/accounts', data),
   update: (id: number, data: any) => api.patch(`/accounts/${id}`, data),
   remove: (id: number) => api.delete(`/accounts/${id}`),
+  getStats: () => api.get('/accounts/stats'),
 };
 
 export const employeeService = {
@@ -85,6 +98,7 @@ export const paymentService = {
 
 export const leaveRequestService = {
   findAll: () => api.get('/leave-requests'),
+  getStats: () => api.get('/leave-requests/stats'),
 };
 
 export const userService = {
