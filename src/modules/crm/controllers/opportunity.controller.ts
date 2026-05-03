@@ -9,6 +9,12 @@ import { Opportunity } from '../entities/opportunity.entity';
 export class OpportunityController {
   constructor(private readonly opportunityService: OpportunityService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get opportunity statistics' })
+  getStats() {
+    return this.opportunityService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new opportunity' })
   @ApiResponse({ status: 201, description: 'The opportunity has been successfully created.', type: Opportunity })

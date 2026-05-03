@@ -9,6 +9,12 @@ import { Project } from '../entities/project.entity';
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Get project statistics' })
+  getStats() {
+    return this.projectService.getStats();
+  }
+
   @Post()
   @ApiOperation({ summary: 'Create a new project' })
   @ApiResponse({ status: 201, description: 'The project has been successfully created.', type: Project })

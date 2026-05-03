@@ -64,4 +64,26 @@ export class OpportunityService {
       throw new NotFoundException(`Opportunity with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const total = await this.opportunityRepository.count();
+    const stageCounts = await this.opportunityRepository
+      .createQueryBuilder('opportunity')
+      .select('opportunity.stage', 'stage')
+      .addSelect('COUNT(opportunity.id)', 'count')
+      .addSelect('SUM(opportunity.amount)', 'totalAmount')
+      .groupBy('opportunity.stage')
+      .getRawMany();
+
+    const totalValue = await this.opportunityRepository
+      .createQueryBuilder('opportunity')
+      .select('SUM(opportunity.amount)', 'total')
+      .getRawOne();
+
+    return {
+      total,
+      totalValue: totalValue.total || 0,
+      stageCounts,
+    };
+  }
 }

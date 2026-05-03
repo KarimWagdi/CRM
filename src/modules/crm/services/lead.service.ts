@@ -40,4 +40,25 @@ export class LeadService {
       throw new NotFoundException(`Lead with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const total = await this.leadRepository.count();
+    const statusCounts = await this.leadRepository
+      .createQueryBuilder('lead')
+      .select('lead.status', 'status')
+      .addSelect('COUNT(lead.id)', 'count')
+      .groupBy('lead.status')
+      .getRawMany();
+
+    const recentLeads = await this.leadRepository.find({
+      order: { createdAt: 'DESC' },
+      take: 5,
+    });
+
+    return {
+      total,
+      statusCounts,
+      recentLeads,
+    };
+  }
 }

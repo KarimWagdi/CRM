@@ -29,7 +29,7 @@ const HRDashboard: React.FC = () => {
       } catch (error) {
         console.error("Failed to fetch HR data", error);
       } finally {
-        setLoading(loading => false);
+        setLoading(false);
       }
     };
     fetchData();

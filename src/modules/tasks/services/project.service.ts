@@ -61,4 +61,18 @@ export class ProjectService {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
   }
+
+  async getStats() {
+    const totalCount = await this.projectRepository.count();
+    const recentProjects = await this.projectRepository.find({
+      relations: ['account'],
+      order: { createdAt: 'DESC' },
+      take: 5,
+    });
+
+    return {
+      totalCount,
+      recentProjects,
+    };
+  }
 }
