@@ -23,6 +23,7 @@ import InvoicesPage from './pages/InvoicesPage';
 import PaymentsPage from './pages/PaymentsPage';
 import ExpensesPage from './pages/ExpensesPage';
 import UsersPage from './pages/UsersPage';
+import ChatPage from './pages/ChatPage';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { role, setRole } = useAuth();
@@ -79,6 +80,9 @@ const App: React.FC = () => {
 
           {/* System Routes */}
           <Route path="/users" element={<UsersPage />} />
+
+          {/* Chat Routes */}
+          <Route path="/chat" element={<ChatPage />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

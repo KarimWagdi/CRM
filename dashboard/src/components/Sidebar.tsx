@@ -11,7 +11,9 @@ import {
   ClipboardList,
   UserCheck,
   CreditCard,
-  Building2
+  Building2,
+  Coffee,
+  MessageSquare
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
@@ -23,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const getLinks = () => {
     const baseLinks = [
       { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+      { to: '/chat', icon: MessageSquare, label: 'Chat' },
     ];
 
     const adminLinks = [
@@ -31,29 +34,40 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       { to: '/employees', icon: UserCheck, label: 'HR' },
       { to: '/projects', icon: Briefcase, label: 'Projects' },
       { to: '/invoices', icon: FileText, label: 'Finance' },
+      { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
+      { to: '/drink-management', icon: Coffee, label: 'Cafeteria Admin' },
     ];
 
     const salesLinks = [
       { to: '/leads', icon: TrendingUp, label: 'Leads' },
       { to: '/accounts', icon: Building2, label: 'Accounts' },
       { to: '/opportunities', icon: TrendingUp, label: 'Opportunities' },
+      { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
     ];
 
     const hrLinks = [
       { to: '/employees', icon: Users, label: 'Employees' },
       { to: '/leave-requests', icon: ClipboardList, label: 'Leave Requests' },
       { to: '/attendance', icon: UserCheck, label: 'Attendance' },
+      { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
     ];
 
     const projectLinks = [
       { to: '/projects', icon: Briefcase, label: 'Projects' },
       { to: '/tasks', icon: ClipboardList, label: 'Tasks' },
+      { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
     ];
 
     const financeLinks = [
       { to: '/invoices', icon: FileText, label: 'Invoices' },
       { to: '/payments', icon: CreditCard, label: 'Payments' },
       { to: '/expenses', icon: TrendingUp, label: 'Expenses' },
+      { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
+    ];
+
+    const baseLinksWithCafeteria = [
+      ...baseLinks,
+      { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
     ];
 
     switch (role) {
@@ -62,7 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       case 'HR': return [...baseLinks, ...hrLinks];
       case 'Project': return [...baseLinks, ...projectLinks];
       case 'Finance': return [...baseLinks, ...financeLinks];
-      default: return baseLinks;
+      default: return baseLinksWithCafeteria;
     }
   };
 
