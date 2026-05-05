@@ -11,7 +11,10 @@ import {
   ClipboardList,
   UserCheck,
   CreditCard,
-  Building2
+  Building2,
+  Package,
+  Truck,
+  Receipt
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
@@ -31,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       { to: '/employees', icon: UserCheck, label: 'HR' },
       { to: '/projects', icon: Briefcase, label: 'Projects' },
       { to: '/invoices', icon: FileText, label: 'Finance' },
+      { to: '/inventory', icon: Package, label: 'Inventory' },
     ];
 
     const salesLinks = [
@@ -52,8 +56,11 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
     const financeLinks = [
       { to: '/invoices', icon: FileText, label: 'Invoices' },
+      { to: '/bills', icon: Receipt, label: 'Bills' },
+      { to: '/suppliers', icon: Truck, label: 'Suppliers' },
       { to: '/payments', icon: CreditCard, label: 'Payments' },
       { to: '/expenses', icon: TrendingUp, label: 'Expenses' },
+      { to: '/inventory', icon: Package, label: 'Inventory' },
     ];
 
     switch (role) {

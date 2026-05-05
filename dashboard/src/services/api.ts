@@ -92,6 +92,33 @@ export const expenseService = {
   getStats: () => api.get('/expenses/stats'),
 };
 
+export const supplierService = {
+  findAll: () => api.get('/suppliers'),
+  findOne: (id: number) => api.get(`/suppliers/${id}`),
+  create: (data: any) => api.post('/suppliers', data),
+  update: (id: number, data: any) => api.patch(`/suppliers/${id}`, data),
+  remove: (id: number) => api.delete(`/suppliers/${id}`),
+};
+
+export const billService = {
+  findAll: () => api.get('/bills'),
+  findOne: (id: number) => api.get(`/bills/${id}`),
+  create: (data: any) => api.post('/bills', data),
+  update: (id: number, data: any) => api.patch(`/bills/${id}`, data),
+  remove: (id: number) => api.delete(`/bills/${id}`),
+  getStats: () => api.get('/bills/stats'),
+};
+
+export const inventoryService = {
+  findAll: () => api.get('/inventory'),
+  findOne: (id: number) => api.get(`/inventory/${id}`),
+  create: (data: any) => api.post('/inventory', data),
+  update: (id: number, data: any) => api.patch(`/inventory/${id}`, data),
+  remove: (id: number) => api.delete(`/inventory/${id}`),
+  getStats: () => api.get('/inventory/stats'),
+  purchase: (id: number, data: any) => api.post(`/inventory/${id}/purchase`, data),
+};
+
 export const paymentService = {
   findAll: () => api.get('/payments'),
 };
