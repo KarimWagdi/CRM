@@ -3,36 +3,49 @@ import StatsCard from '../components/StatsCard';
 import { Users, Calendar, Clock, Award, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { salaryService, performanceService, employeeService, leaveRequestService, attendanceService } from '../services/api';
+import Modal from '../components/Modal';
 
 const HRDashboard: React.FC = () => {
   const [salaries, setSalaries] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
   const [empStats, setEmpStats] = useState<any>(null);
   const [leaveStats, setLeaveStats] = useState<any>(null);
   const [attendanceStats, setAttendanceStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    employeeId: '',
+    period: '',
+    score: 5,
+    comments: '',
+  });
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [salRes, revRes, empRes, leaveRes, attRes, allEmps] = await Promise.all([
+        salaryService.findAll(),
+        performanceService.findAll(),
+        employeeService.getStats(),
+        leaveRequestService.getStats(),
+        attendanceService.getStats(),
+        employeeService.findAll()
+      ]);
+      setSalaries(salRes.data);
+      setReviews(revRes.data);
+      setEmpStats(empRes.data);
+      setLeaveStats(leaveRes.data);
+      setAttendanceStats(attRes.data);
+      setEmployees(allEmps.data);
+    } catch (error) {
+      console.error("Failed to fetch HR data", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [salRes, revRes, empRes, leaveRes, attRes] = await Promise.all([
-          salaryService.findAll(),
-          performanceService.findAll(),
-          employeeService.getStats(),
-          leaveRequestService.getStats(),
-          attendanceService.getStats()
-        ]);
-        setSalaries(salRes.data);
-        setReviews(revRes.data);
-        setEmpStats(empRes.data);
-        setLeaveStats(leaveRes.data);
-        setAttendanceStats(attRes.data);
-      } catch (error) {
-        console.error("Failed to fetch HR data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
@@ -46,6 +59,22 @@ const HRDashboard: React.FC = () => {
       } catch (error) {
         alert("Failed to trigger payout");
       }
+    }
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await performanceService.create({
+        ...formData,
+        employeeId: Number(formData.employeeId),
+        score: Number(formData.score),
+      });
+      setIsModalOpen(false);
+      setFormData({ employeeId: '', period: '', score: 5, comments: '' });
+      fetchData();
+    } catch (error) {
+      console.error("Failed to create performance review", error);
     }
   };
 
@@ -141,7 +170,10 @@ const HRDashboard: React.FC = () => {
         <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Performance Reviews</h3>
-            <button className="px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded hover:bg-indigo-700">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded hover:bg-indigo-700"
+            >
               New Review
             </button>
           </div>
@@ -163,6 +195,77 @@ const HRDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="New Performance Review"
+      >
+        <form onSubmit={handleReviewSubmit} className="p-6 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Employee</label>
+            <select
+              required
+              value={formData.employeeId}
+              onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            >
+              <option value="">Select employee</option>
+              {employees.map((emp) => (
+                <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Review Period</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Q1 2024"
+              value={formData.period}
+              onChange={(e) => setFormData({ ...formData, period: e.target.value })}
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Score (1-5)</label>
+            <input
+              type="number"
+              min="1"
+              max="5"
+              step="0.1"
+              required
+              value={formData.score}
+              onChange={(e) => setFormData({ ...formData, score: Number(e.target.value) })}
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Comments</label>
+            <textarea
+              value={formData.comments}
+              onChange={(e) => setFormData({ ...formData, comments: e.target.value })}
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              rows={3}
+            />
+          </div>
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Create Review
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
