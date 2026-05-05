@@ -12,6 +12,9 @@ import {
   UserCheck,
   CreditCard,
   Building2,
+  Package,
+  Truck,
+  Receipt
   Coffee,
   MessageSquare
 } from 'lucide-react';
@@ -34,6 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       { to: '/employees', icon: UserCheck, label: 'HR' },
       { to: '/projects', icon: Briefcase, label: 'Projects' },
       { to: '/invoices', icon: FileText, label: 'Finance' },
+      { to: '/inventory', icon: Package, label: 'Inventory' },
       { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
       { to: '/drink-management', icon: Coffee, label: 'Cafeteria Admin' },
     ];
@@ -60,8 +64,11 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
     const financeLinks = [
       { to: '/invoices', icon: FileText, label: 'Invoices' },
+      { to: '/bills', icon: Receipt, label: 'Bills' },
+      { to: '/suppliers', icon: Truck, label: 'Suppliers' },
       { to: '/payments', icon: CreditCard, label: 'Payments' },
       { to: '/expenses', icon: TrendingUp, label: 'Expenses' },
+      { to: '/inventory', icon: Package, label: 'Inventory' },
       { to: '/cafeteria', icon: Coffee, label: 'Cafeteria' },
     ];
 

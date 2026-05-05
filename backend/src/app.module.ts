@@ -11,6 +11,7 @@ import { UsersModule } from './modules/users/users.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { AccountingModule } from './modules/accounting/accounting.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
 import { CafeteriaModule } from './modules/cafeteria/cafeteria.module';
 import { ChatModule } from './modules/chat/chat.module';
 
@@ -57,6 +58,7 @@ import { ChatModule } from './modules/chat/chat.module';
     TasksModule,
     AccountingModule,
     AuthModule,
+    InventoryModule,
     CafeteriaModule,
     ChatModule,
   ],
