@@ -1,17 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Receipt, Search, Calendar, CreditCard, ChevronRight, Filter } from 'lucide-react';
-import { billService } from '../services/api';
+import { Receipt, Search, Calendar, CreditCard, ChevronRight, Filter, Plus } from 'lucide-react';
+import { billService, supplierService } from '../services/api';
+import Modal from '../components/Modal';
 
 const BillsPage = () => {
   const [bills, setBills] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    billNumber: '',
+    supplierId: '',
+    totalAmount: 0,
+    issueDate: '',
+    dueDate: '',
+    status: 'Pending',
+  });
 
   const fetchData = async () => {
+    setLoading(true);
     try {
       const [billsRes, statsRes] = await Promise.all([
         billService.findAll(),
@@ -23,6 +31,43 @@ const BillsPage = () => {
       console.error('Error fetching bills:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSuppliers = async () => {
+    try {
+      const res = await supplierService.findAll();
+      setSuppliers(res.data);
+    } catch (error) {
+      console.error('Error fetching suppliers:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    fetchSuppliers();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await billService.create({
+        ...formData,
+        supplierId: Number(formData.supplierId),
+        totalAmount: Number(formData.totalAmount),
+      });
+      setIsModalOpen(false);
+      setFormData({
+        billNumber: '',
+        supplierId: '',
+        totalAmount: 0,
+        issueDate: '',
+        dueDate: '',
+        status: 'Pending',
+      });
+      fetchData();
+    } catch (error) {
+      console.error('Failed to create bill', error);
     }
   };
 
@@ -44,6 +89,13 @@ const BillsPage = () => {
           <p className="text-slate-500">Track company expenditures and accounts payable</p>
         </div>
         <div className="flex gap-3">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-indigo-700 transition-colors"
+          >
+            <Plus size={20} />
+            <span>New Bill</span>
+          </button>
           <button className="bg-white text-slate-700 border border-slate-200 px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-slate-50 transition-colors">
             <Filter size={20} />
             <span>Filter</span>
@@ -156,6 +208,102 @@ const BillsPage = () => {
           </table>
         </div>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Create New Bill"
+      >
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Bill Number</label>
+              <input
+                type="text"
+                required
+                placeholder="BILL-2024-001"
+                value={formData.billNumber}
+                onChange={(e) => setFormData({ ...formData, billNumber: e.target.value })}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Supplier</label>
+              <select
+                required
+                value={formData.supplierId}
+                onChange={(e) => setFormData({ ...formData, supplierId: e.target.value })}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              >
+                <option value="">Select supplier</option>
+                {suppliers.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Total Amount ($)</label>
+            <input
+              type="number"
+              required
+              step="0.01"
+              value={formData.totalAmount}
+              onChange={(e) => setFormData({ ...formData, totalAmount: Number(e.target.value) })}
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Issue Date</label>
+              <input
+                type="date"
+                required
+                value={formData.issueDate}
+                onChange={(e) => setFormData({ ...formData, issueDate: e.target.value })}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Due Date</label>
+              <input
+                type="date"
+                required
+                value={formData.dueDate}
+                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            >
+              <option value="Pending">Pending</option>
+              <option value="Paid">Paid</option>
+              <option value="Overdue">Overdue</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Create Bill
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

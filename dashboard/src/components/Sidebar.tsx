@@ -14,7 +14,7 @@ import {
   Building2,
   Package,
   Truck,
-  Receipt
+  Receipt,
   Coffee,
   MessageSquare
 } from 'lucide-react';

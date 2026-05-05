@@ -53,11 +53,16 @@ export const employeeService = {
   update: (id: number, data: any) => api.patch(`/employees/${id}`, data),
   remove: (id: number) => api.delete(`/employees/${id}`),
   getStats: () => api.get('/employees/stats'),
+  getDepartments: () => api.get('/departments'),
+  getPositions: () => api.get('/positions'),
 };
 
 export const attendanceService = {
   findAll: () => api.get('/attendance'),
   getStats: () => api.get('/attendance/stats'),
+  create: (data: any) => api.post('/attendance', data),
+  update: (id: number, data: any) => api.patch(`/attendance/${id}`, data),
+  remove: (id: number) => api.delete(`/attendance/${id}`),
 };
 
 export const projectService = {
@@ -76,6 +81,7 @@ export const taskService = {
   update: (id: number, data: any) => api.patch(`/tasks/${id}`, data),
   remove: (id: number) => api.delete(`/tasks/${id}`),
   getStats: () => api.get('/tasks/stats'),
+  getLists: () => api.get('/lists'),
 };
 
 export const invoiceService = {
@@ -90,6 +96,9 @@ export const invoiceService = {
 export const expenseService = {
   findAll: () => api.get('/expenses'),
   getStats: () => api.get('/expenses/stats'),
+  create: (data: any) => api.post('/expenses', data),
+  update: (id: number, data: any) => api.patch(`/expenses/${id}`, data),
+  remove: (id: number) => api.delete(`/expenses/${id}`),
 };
 
 export const supplierService = {
@@ -121,11 +130,15 @@ export const inventoryService = {
 
 export const paymentService = {
   findAll: () => api.get('/payments'),
+  create: (data: any) => api.post('/payments', data),
 };
 
 export const leaveRequestService = {
   findAll: () => api.get('/leave-requests'),
   getStats: () => api.get('/leave-requests/stats'),
+  create: (data: any) => api.post('/leave-requests', data),
+  update: (id: number, data: any) => api.patch(`/leave-requests/${id}`, data),
+  remove: (id: number) => api.delete(`/leave-requests/${id}`),
 };
 
 export const userService = {
@@ -134,6 +147,7 @@ export const userService = {
   create: (data: any) => api.post('/users', data),
   update: (id: number, data: any) => api.patch(`/users/${id}`, data),
   remove: (id: number) => api.delete(`/users/${id}`),
+  getRoles: () => api.get('/roles'),
 };
 
 export const salaryService = {
