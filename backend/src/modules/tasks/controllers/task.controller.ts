@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { TaskService } from '../services/task.service';
 import { CreateTaskDto, UpdateTaskDto } from '../dto/task.dto';
@@ -22,8 +22,8 @@ export class TaskController {
   @Post()
   @ApiOperation({ summary: 'Create a new task' })
   @ApiResponse({ status: 201, description: 'The task has been successfully created.', type: Task })
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.create(createTaskDto);
+  create(@Body() createTaskDto: CreateTaskDto, @Request() req) {
+    return this.taskService.create(createTaskDto, req.user.id);
   }
 
   @Get()
@@ -45,8 +45,15 @@ export class TaskController {
   @ApiOperation({ summary: 'Update a task' })
   @ApiResponse({ status: 200, description: 'The task has been successfully updated.', type: Task })
   @ApiResponse({ status: 404, description: 'Task not found.' })
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(+id, updateTaskDto);
+  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto, @Request() req) {
+    return this.taskService.update(+id, updateTaskDto, req.user.id);
+  }
+
+  @Get(':id/history')
+  @ApiOperation({ summary: 'Get task history' })
+  @ApiResponse({ status: 200, description: 'Return the task history.' })
+  getHistory(@Param('id') id: string) {
+    return this.taskService.getHistory(+id);
   }
 
   @Delete(':id')

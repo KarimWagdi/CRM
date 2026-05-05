@@ -5,6 +5,8 @@ import { Task } from '../entities/task.entity';
 import { CreateTaskDto, UpdateTaskDto } from '../dto/task.dto';
 import { List } from '../entities/list.entity';
 import { Employee } from '../../hr/entities/employee.entity';
+import { TaskHistory, TaskAction } from '../entities/task-history.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class TaskService {
@@ -15,6 +17,10 @@ export class TaskService {
     private listRepository: Repository<List>,
     @InjectRepository(Employee)
     private employeeRepository: Repository<Employee>,
+    @InjectRepository(TaskHistory)
+    private historyRepository: Repository<TaskHistory>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   findAll(): Promise<Task[]> {
@@ -32,7 +38,7 @@ export class TaskService {
     return task;
   }
 
-  async create(createTaskDto: CreateTaskDto): Promise<Task> {
+  async create(createTaskDto: CreateTaskDto, userId?: number): Promise<Task> {
     const { listId, assigneeId, ...taskData } = createTaskDto;
 
     const list = await this.listRepository.findOneBy({ id: listId });
@@ -49,20 +55,45 @@ export class TaskService {
       task.assignee = assignee;
     }
 
-    return this.taskRepository.save(task);
+    const savedTask = await this.taskRepository.save(task);
+
+    if (assigneeId && userId) {
+      await this.recordHistory(
+        savedTask,
+        TaskAction.ASSIGNED,
+        null,
+        assigneeId.toString(),
+        userId,
+      );
+    }
+
+    return savedTask;
   }
 
-  async update(id: number, updateTaskDto: UpdateTaskDto): Promise<Task> {
+  async update(id: number, updateTaskDto: UpdateTaskDto, userId?: number): Promise<Task> {
     const task = await this.findOne(id);
     const { listId, assigneeId, ...taskData } = updateTaskDto;
 
-    if (listId) {
+    const oldListId = task.list?.id;
+    const oldAssigneeId = task.assignee?.id;
+
+    if (listId && listId !== oldListId) {
       const list = await this.listRepository.findOneBy({ id: listId });
       if (!list) throw new NotFoundException(`List with ID ${listId} not found`);
       task.list = list;
+
+      if (userId) {
+        await this.recordHistory(
+          task,
+          TaskAction.STATUS_CHANGE,
+          oldListId?.toString() || null,
+          listId.toString(),
+          userId,
+        );
+      }
     }
 
-    if (assigneeId !== undefined) {
+    if (assigneeId !== undefined && assigneeId !== oldAssigneeId) {
       if (assigneeId === null) {
         task.assignee = null as any;
       } else {
@@ -70,10 +101,45 @@ export class TaskService {
         if (!assignee) throw new NotFoundException(`Employee with ID ${assigneeId} not found`);
         task.assignee = assignee;
       }
+
+      if (userId) {
+        await this.recordHistory(
+          task,
+          TaskAction.ASSIGNED,
+          oldAssigneeId?.toString() || null,
+          assigneeId?.toString() || null,
+          userId,
+        );
+      }
     }
 
     this.taskRepository.merge(task, taskData);
     return this.taskRepository.save(task);
+  }
+
+  private async recordHistory(
+    task: Task,
+    action: TaskAction,
+    oldValue: string | null,
+    newValue: string | null,
+    userId: number,
+  ) {
+    const history = new TaskHistory();
+    history.task = { id: task.id } as Task;
+    history.action = action;
+    history.oldValue = oldValue;
+    history.newValue = newValue;
+    history.user = { id: userId } as User;
+
+    await this.historyRepository.save(history);
+  }
+
+  async getHistory(taskId: number): Promise<TaskHistory[]> {
+    return this.historyRepository.find({
+      where: { task: { id: taskId } },
+      relations: ['user'],
+      order: { timestamp: 'DESC' },
+    });
   }
 
   async remove(id: number): Promise<void> {
