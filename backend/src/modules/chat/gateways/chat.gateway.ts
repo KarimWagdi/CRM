@@ -9,8 +9,6 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ChatService } from '../services/chat.service';
-import { UseGuards } from '@nestjs/common';
-import { WsJwtGuard } from '../guards/ws-jwt.guard';
 
 @WebSocketGateway({
   cors: {

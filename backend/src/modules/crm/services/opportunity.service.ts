@@ -1,9 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Opportunity } from '../entities/opportunity.entity';
+import { Opportunity, OpportunityStage } from '../entities/opportunity.entity';
 import { CreateOpportunityDto, UpdateOpportunityDto } from '../dto/opportunity.dto';
 import { Account } from '../entities/account.entity';
+import { InvoiceService } from '../../accounting/services/invoice.service';
+import { AuditService } from '../../audit/services/audit.service';
 
 @Injectable()
 export class OpportunityService {
@@ -12,6 +14,8 @@ export class OpportunityService {
     private opportunityRepository: Repository<Opportunity>,
     @InjectRepository(Account)
     private accountRepository: Repository<Account>,
+    private invoiceService: InvoiceService,
+    @Optional() private auditService?: AuditService,
   ) {}
 
   findAll(): Promise<Opportunity[]> {
@@ -39,11 +43,16 @@ export class OpportunityService {
       ...opportunityData,
       account,
     });
-    return this.opportunityRepository.save(opportunity);
+    const saved = await this.opportunityRepository.save(opportunity);
+    if (this.auditService) {
+      await this.auditService.logAction('CREATE', 'Opportunity', saved.id, `Created opportunity ${saved.name}`);
+    }
+    return saved;
   }
 
   async update(id: number, updateOpportunityDto: UpdateOpportunityDto): Promise<Opportunity> {
     const opportunity = await this.findOne(id);
+    const previousStage = opportunity.stage;
     const { accountId, ...opportunityData } = updateOpportunityDto;
 
     if (accountId) {
@@ -55,13 +64,38 @@ export class OpportunityService {
     }
 
     this.opportunityRepository.merge(opportunity, opportunityData);
-    return this.opportunityRepository.save(opportunity);
+    const updatedOpportunity = await this.opportunityRepository.save(opportunity);
+
+    // Automation Trigger: If transitioned to Closed Won, automatically generate draft invoice
+    if (previousStage !== OpportunityStage.CLOSED_WON && updatedOpportunity.stage === OpportunityStage.CLOSED_WON) {
+      const fullOpportunity = updatedOpportunity.account
+        ? updatedOpportunity
+        : await this.findOne(updatedOpportunity.id);
+
+      if (fullOpportunity.account) {
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + 30);
+        await this.invoiceService.create({
+          invoiceNumber: `INV-WON-${fullOpportunity.id}-${Date.now()}`,
+          accountId: fullOpportunity.account.id,
+          issueDate: new Date(),
+          dueDate,
+          totalAmount: fullOpportunity.amount || 0,
+          status: 'Draft' as any,
+        });
+      }
+    }
+
+    return updatedOpportunity;
   }
 
   async remove(id: number): Promise<void> {
     const result = await this.opportunityRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Opportunity with ID ${id} not found`);
+    }
+    if (this.auditService) {
+      await this.auditService.logAction('DELETE', 'Opportunity', id, `Deleted opportunity ${id}`);
     }
   }
 
