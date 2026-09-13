@@ -13,6 +13,8 @@ import { AccountingModule } from './modules/accounting/accounting.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -59,6 +61,8 @@ import { ChatModule } from './modules/chat/chat.module';
     AuthModule,
     InventoryModule,
     ChatModule,
+    AuditModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
