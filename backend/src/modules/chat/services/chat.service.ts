@@ -86,9 +86,10 @@ export class ChatService implements OnModuleInit {
     if (!directRoom) {
       const user1 = await this.userRepository.findOneBy({ id: user1Id });
       const user2 = await this.userRepository.findOneBy({ id: user2Id });
+      const participants = [user1, user2].filter((u): u is User => u !== null);
       directRoom = this.roomRepository.create({
         type: RoomType.DIRECT,
-        participants: [user1, user2],
+        participants,
       });
       await this.roomRepository.save(directRoom);
     }
@@ -98,6 +99,9 @@ export class ChatService implements OnModuleInit {
 
   async saveMessage(userId: number, roomId: number, content: string, parentId?: number) {
     const room = await this.roomRepository.findOneBy({ id: roomId });
+    if (!room) {
+      throw new Error(`Room with ID ${roomId} not found`);
+    }
     const sender = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['employee', 'employee.position'],
@@ -106,12 +110,14 @@ export class ChatService implements OnModuleInit {
     const message = this.messageRepository.create({
       content,
       room,
-      sender,
+      sender: sender || undefined,
     });
 
     if (parentId) {
       const parent = await this.messageRepository.findOneBy({ id: parentId });
-      message.parent = parent;
+      if (parent) {
+        message.parent = parent;
+      }
     }
 
     return this.messageRepository.save(message);

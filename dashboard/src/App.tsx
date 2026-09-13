@@ -20,8 +20,11 @@ import AttendancePage from './pages/AttendancePage';
 import ProjectsPage from './pages/ProjectsPage';
 import TasksPage from './pages/TasksPage';
 import InvoicesPage from './pages/InvoicesPage';
+import BillsPage from './pages/BillsPage';
+import SuppliersPage from './pages/SuppliersPage';
 import PaymentsPage from './pages/PaymentsPage';
 import ExpensesPage from './pages/ExpensesPage';
+import InventoryPage from './pages/InventoryPage';
 import UsersPage from './pages/UsersPage';
 import ChatPage from './pages/ChatPage';
 
@@ -75,8 +78,13 @@ const App: React.FC = () => {
 
           {/* Finance Routes */}
           <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/bills" element={<BillsPage />} />
+          <Route path="/suppliers" element={<SuppliersPage />} />
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/expenses" element={<ExpensesPage />} />
+
+          {/* Inventory Routes */}
+          <Route path="/inventory" element={<InventoryPage />} />
 
           {/* System Routes */}
           <Route path="/users" element={<UsersPage />} />
